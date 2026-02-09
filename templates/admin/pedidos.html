@@ -1,0 +1,109 @@
+{% extends "admin/base.html" %}
+{% block title %}Pedidos | Admin{% endblock %}
+{% block page_title %}Pedidos{% endblock %}
+
+{% block content %}
+
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="label">Novos</div>
+    <div class="value">{{ kpis.novo }}</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Em produção</div>
+    <div class="value">{{ kpis.em_producao }}</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Prontos</div>
+    <div class="value">{{ kpis.pronto }}</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Total</div>
+    <div class="value">{{ kpis.total }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Lista de pedidos</div>
+      <div class="card-sub">Filtre por status e busque por descrição/arquivo.</div>
+    </div>
+  </div>
+
+  <form class="toolbar" method="get" action="/admin/pedidos">
+    <select class="select" name="status">
+      <option value="">Todos os status</option>
+      <option value="novo" {% if status=='novo' %}selected{% endif %}>novo</option>
+      <option value="em_producao" {% if status=='em_producao' %}selected{% endif %}>em_producao</option>
+      <option value="pronto" {% if status=='pronto' %}selected{% endif %}>pronto</option>
+      <option value="entregue" {% if status=='entregue' %}selected{% endif %}>entregue</option>
+    </select>
+
+    <input class="input" name="q" placeholder="Buscar por descrição ou arquivo..." value="{{ q or '' }}">
+    <button class="btn primary" type="submit">Aplicar</button>
+    <a class="btn" href="/admin/pedidos">Limpar</a>
+  </form>
+
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Status</th>
+          <th>Tipo</th>
+          <th>Páginas</th>
+          <th>Cópias</th>
+          <th>Total</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pedidos %}
+        <tr>
+          <td><a class="link" href="/admin/pedido/{{ p.id }}">#{{ p.id }}</a></td>
+
+          <td>
+            <span class="chip {{ p.status }}">
+              <span class="dot"></span>{{ p.status }}
+            </span>
+          </td>
+
+          <td>{{ p.tipo_cor }} • {{ p.tamanho_papel }} • {{ p.tipo_papel }}</td>
+          <td>{{ p.paginas_cobradas }}</td>
+          <td>{{ p.copias }}</td>
+          <td>R$ {{ '%.2f'|format(p.valor_total) }}</td>
+
+          <td>
+            <div class="row-actions">
+              <a class="btn" href="/admin/pedido/{{ p.id }}">Detalhes</a>
+              {% if p.arquivo %}
+                <a class="btn" href="/admin/pedido/{{ p.id }}/arquivo">Baixar</a>
+              {% else %}
+                <span style="color: var(--muted); font-size: 12px;">sem arquivo</span>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Pedidos</title>
+</head>
+<body>
+  <h1>Pedidos</h1>
+
+  <ul>
+    {% for p in pedidos %}
+      <li>Pedido #{{ p.id }} - {{ p.status }}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

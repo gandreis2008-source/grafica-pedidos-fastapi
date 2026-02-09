@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Orçamento</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; background:#f5f5f5; padding:20px; }
+    .container { max-width:720px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,.08); }
+    h2 { margin:0 0 18px; color:#333; }
+    p { margin:8px 0; color:#444; }
+    .total { margin-top:16px; font-size:1.3em; color:#1a7f37; }
+    .box { margin-top:12px; padding:12px; background:#f7f7f7; border-radius:6px; }
+    a { display:inline-block; margin-top:18px; color:#0066cc; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .tag { display:inline-block; padding:3px 10px; border-radius:999px; background:#eef3ff; margin-left:6px; font-size:.9em; color:#1b3a8a; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Orçamento do Pedido</h2>
+
+    <p><strong>Tipo:</strong> {{ tipo_cor }}</p>
+    <p><strong>Tamanho:</strong> {{ tamanho_papel }}</p>
+    <p><strong>Papel:</strong> {{ tipo_papel }}</p>
+
+    <p><strong>Páginas do arquivo:</strong> {{ paginas_arquivo }}</p>
+    <p><strong>Slides por página:</strong> {{ slides_por_pagina }}
+      {% if tamanho_papel != "A4" %}<span class="tag">aplicável só no A4</span>{% endif %}
+    </p>
+    <p><strong>Cópias:</strong> {{ copias }}</p>
+    <p><strong>Páginas cobradas:</strong> {{ paginas_cobradas }}</p>
+
+    <p>
+      <strong>Preferência:</strong>
+      {% if frente_verso %} Frente e verso {% else %} Somente frente {% endif %}
+      <span class="tag">não altera valor</span>
+    </p>
+
+    {% if grampear or encadernar or plastificar %}
+      <div class="box">
+        <strong>Serviços:</strong><br/>
+        {% if grampear %} • Grampear<br/>{% endif %}
+        {% if encadernar %} • Encadernar<br/>{% endif %}
+        {% if plastificar %} • Plastificar<br/>{% endif %}
+      </div>
+    {% endif %}
+
+    {% if descricao %}
+      <div class="box">
+        <strong>Descrição:</strong><br/>
+        {{ descricao }}
+      </div>
+    {% endif %}
+
+    <p><strong>Preço por página:</strong> R$ {{ "%.2f"|format(preco_pagina)|replace(".", ",") }}</p>
+
+    <p class="total">
+      <strong>Valor total:</strong>
+      R$ {{ "%.2f"|format(valor_total)|replace(".", ",") }}
+    </p>
+
+    <a href="/pedido">← Voltar</a>
+  </div>
+</body>
+</html>
+<hr>
+
+<form action="/confirmar-pedido" method="post">
+  <input type="hidden" name="tipo_cor" value="{{ tipo_cor }}">
+  <input type="hidden" name="tamanho_papel" value="{{ tamanho_papel }}">
+  <input type="hidden" name="tipo_papel" value="{{ tipo_papel }}">
+  <input type="hidden" name="slides_por_pagina" value="{{ slides_por_pagina }}">
+  <input type="hidden" name="copias" value="{{ copias }}">
+  <input type="hidden" name="frente_verso" value="{{ 'true' if frente_verso else 'false' }}">
+  <input type="hidden" name="descricao" value="{{ descricao }}">
+  <input type="hidden" name="grampear" value="{{ 'true' if grampear else 'false' }}">
+  <input type="hidden" name="encadernar" value="{{ 'true' if encadernar else 'false' }}">
+  <input type="hidden" name="plastificar" value="{{ 'true' if plastificar else 'false' }}">
+  <input type="hidden" name="arquivo_nome" value="{{ arquivo_nome }}">
+
+  <button type="submit">Confirmar pedido</button>
+</form>

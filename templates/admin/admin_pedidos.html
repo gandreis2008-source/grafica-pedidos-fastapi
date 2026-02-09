@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin - Gestão de Pedidos</title>
+  <link rel="stylesheet" href="/static/style.css"> 
+</head>
+<div id="detailsModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <h3 class="card-title">Detalhes do Pedido <span id="modal-id"></span></h3>
+    <hr style="border: 0; border-top: 1px solid var(--line); margin: 15px 0;">
+    
+    <div id="modal-body">
+      </div>
+
+    <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button onclick="closeModal()" class="btn" style="flex: 1;">Fechar</button>
+    </div>
+  </div>
+</div>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">🚀</div>
+        <div>
+          <div class="brand-name">Gráfica Pro</div>
+          <div class="brand-sub">Painel Admin</div>
+        </div>
+      </div>
+      
+      <nav class="nav">
+        <a href="/admin/pedidos" class="nav-link {% if nav == 'pedidos' %}active{% endif %}">📦 Pedidos</a>
+        <a href="/admin/precos" class="nav-link">💰 Tabela de Preços</a>
+        <a href="/" class="nav-link">🌐 Ver Site</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="mini">
+          <div class="mini-title">Dica do Sistema</div>
+          <div class="mini-link">Lembre de atualizar o status para notificar o cliente.</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn">☰</button>
+          <h1 class="page-title">Gerenciamento de Pedidos</h1>
+        </div>
+        <div class="badge">Hoje: {{ pedidos|length }} pedidos encontrados</div>
+      </header>
+
+      <section class="content">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="label">Novos</div>
+            <div class="value">{{ kpis.novo }}</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Em Produção</div>
+            <div class="value">{{ kpis.em_producao }}</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Prontos</div>
+            <div class="value">{{ kpis.pronto }}</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Total Geral</div>
+            <div class="value">{{ kpis.total }}</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="toolbar">
+            <form method="get" action="/admin/pedidos" style="display:flex; gap:10px; width:100%">
+              <input type="text" name="q" value="{{ q or '' }}" class="input" placeholder="Buscar por arquivo ou descrição..." style="flex:1">
+              <select name="status" class="select">
+                <option value="">Todos os Status</option>
+                <option value="novo" {% if status == 'novo' %}selected{% endif %}>Novo</option>
+                <option value="em_producao" {% if status == 'em_producao' %}selected{% endif %}>Em produção</option>
+                <option value="pronto" {% if status == 'pronto' %}selected{% endif %}>Pronto</option>
+              </select>
+              <button type="submit" class="btn primary">Filtrar</button>
+            </form>
+          </div>
+
+          <div class="card-body" style="padding:0">
+            <table class="table">
+              <thead>
+          <table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Data/Hora</th> <th>Status</th>
+      <th>Especificações</th>
+      <th>Pag/Cop</th>
+      <th>Total</th>
+      <th>Arquivo</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+  {% for p in pedidos %}
+  <tr>
+    <td>#{{ p.id }}</td>
+    
+    <td>
+      <div style="font-weight:600">
+        {{ p.criado_em.strftime('%d/%m/%Y') }}
+      </div>
+      <div class="card-sub">
+        {{ p.criado_em.strftime('%H:%M') }}
+      </div>
+    </td>
+
+    <td>
+      <div class="chip {{ p.status }}">
+        <span class="dot"></span>
+        {{ p.status|replace('_', ' ')|capitalize }}
+      </div>
+    </td>
+
+    <td>
+      <div style="font-weight:600">{{ p.tipo_cor }}</div>
+      <div class="card-sub">{{ p.tamanho_papel }} • {{ p.tipo_papel }}</div>
+    </td>
+
+    <td style="font-weight:700; color:var(--ok)">R$ {{ "%.2f"|format(p.valor_total) }}</td>
+
+    <td>
+      <div class="row-actions">
+        <button class="btn" onclick="openDetails({
+            id: '{{ p.id }}',
+            descricao: '{{ p.descricao|replace("\n", " ")|replace("\r", " ")|safe if p.descricao else "" }}',
+            grampear: {{ 'true' if p.grampear else 'false' }},
+            encadernar: {{ 'true' if p.encadernar else 'false' }},
+            plastificar: {{ 'true' if p.plastificar else 'false' }},
+            frente_verso: {{ 'true' if p.frente_verso else 'false' }},
+            slides_por_pagina: '{{ p.slides_por_pagina }}'
+        })">Detalhes</button>
+        
+        <a href="/uploads/{{ p.arquivo }}" download class="btn">Baixar</a>
+      </div>
+    </td>
+  </tr>
+  {% endfor %} </tbody>
+
+      <td>
+        <div style="font-weight:600">
+          {{ p.criado_em.strftime('%d/%m/%Y') }}
+        </div>
+        <div class="card-sub">
+          {{ p.criado_em.strftime('%H:%M') }}
+        </div>
+      </td>
+
+      <td>
+        <div class="chip {{ p.status }}">
+          <span class="dot"></span>
+          {{ p.status|replace('_', ' ')|capitalize }}
+        </div>
+      </td>
+      <td>
+        <div style="font-weight:600">{{ p.tipo_cor }}</div>
+        <div class="card-sub">{{ p.tamanho_papel }} • {{ p.tipo_papel }}</div>
+      </td>
+      <td>
+        {{ p.paginas_cobradas }} pág. <br>
+        <span class="card-sub">{{ p.copias }} cópias</span>
+      </td>
+      <td style="font-weight:700; color:var(--ok)">R$ {{ "%.2f"|format(p.valor_total) }}</td>
+      <td>
+        {% if p.arquivo %}
+          <a href="/uploads/{{ p.arquivo }}" class="link" target="_blank">{{ p.arquivo[:15] }}...</a>
+        {% else %}
+          <span class="card-sub">Sem arquivo</span>
+        {% endif %}
+      </td>
+      <td>
+        <form action="/admin/pedido/status" method="post" class="row-actions">
+          <input type="hidden" name="pedido_id" value="{{ p.id }}">
+          <select name="status" class="select" style="padding:5px; font-size:12px">
+            <option value="novo" {% if p.status == 'novo' %}selected{% endif %}>Novo</option>
+            <option value="em_producao" {% if p.status == 'em_producao' %}selected{% endif %}>Produção</option>
+            <option value="pronto" {% if p.status == 'pronto' %}selected{% endif %}>Pronto</option>
+            <option value="entregue" {% if p.status == 'entregue' %}selected{% endif %}>Entregue</option>
+          </select>
+          <button type="submit" class="btn" style="padding:5px 10px">✔</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<script>
+// Função para abrir o modal e preencher os dados
+function openDetails(pedido) {
+    const modal = document.getElementById("detailsModal");
+    const body = document.getElementById("modal-body");
+    
+    // Define o ID no título do modal
+    document.getElementById("modal-id").innerText = "#" + pedido.id;
+
+    // Lógica para formatar os "Chips" de serviços extras
+    let extras = "";
+    if(pedido.grampear === true) extras += '<span class="chip novo">Grampear</span> ';
+    if(pedido.encadernar === true) extras += '<span class="chip pronto">Encadernar</span> ';
+    if(pedido.plastificar === true) extras += '<span class="chip em_producao">Plastificar</span> ';
+    
+    if(!extras) extras = '<span class="card-sub">Nenhum serviço extra</span>';
+
+    // Insere o conteúdo dinâmico dentro do modal
+    body.innerHTML = `
+        <div class="detail-item">
+            <span class="detail-label">Descrição / Observações:</span>
+        </div>
+        <div style="padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 8px; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+            ${pedido.descricao || 'O cliente não deixou observações.'}
+        </div>
+        
+        <div class="detail-item">
+            <span class="detail-label">Serviços Adicionais:</span>
+            <div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;">${extras}</div>
+        </div>
+        
+        <div class="detail-item" style="margin-top:10px">
+            <span class="detail-label">Frente e Verso:</span>
+            <span class="detail-value" style="color: ${pedido.frente_verso ? 'var(--ok)' : 'var(--muted)'}">
+                ${pedido.frente_verso ? 'Sim' : 'Não'}
+            </span>
+        </div>
+        
+        <div class="detail-item">
+            <span class="detail-label">Slides por Página (A4):</span>
+            <span class="detail-value">${pedido.slides_por_pagina}</span>
+        </div>
+    `;
+    
+    // Exibe o modal
+    modal.style.display = "block";
+}
+
+// Função para fechar o modal
+function closeModal() {
+    document.getElementById("detailsModal").style.display = "none";
+}
+
+// Fechar o modal se o usuário clicar fora da caixa preta
+window.onclick = function(event) {
+    const modal = document.getElementById("detailsModal");
+    if (event.target == modal) {
+        closeModal();
+    }
+}
+</script>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Admin{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">🖨️</div>
+        <div>
+          <div class="brand-name">SuaGráfica</div>
+          <div class="brand-sub">Admin</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-link {% if nav=='pedidos' %}active{% endif %}" href="/admin/pedidos">
+          Pedidos
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="mini">
+          <div class="mini-title">Atalhos</div>
+          <a class="mini-link" href="/admin/pedidos?status=novo">Novos</a>
+          <a class="mini-link" href="/admin/pedidos?status=em_producao">Em produção</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn" id="menuBtn" aria-label="Menu">☰</button>
+          <div class="page-title">{% block page_title %}{% endblock %}</div>
+        </div>
+        <div class="topbar-right">
+          <div class="badge">Versão MVP</div>
+        </div>
+      </header>
+
+      <section class="content">
+        {% block content %}{% endblock %}
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/admin.js"></script>
+</body>
+</html>

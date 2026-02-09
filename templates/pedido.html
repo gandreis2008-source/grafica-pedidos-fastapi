@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pedido de Impressão</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; background:#f5f5f5; padding:20px; }
+    .container { max-width:720px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,.08); }
+    h2 { margin:0 0 18px; text-align:center; color:#333; }
+    label { font-weight:bold; color:#444; display:block; margin-top:14px; }
+    select, input[type="number"], input[type="file"], textarea {
+      width:100%; margin-top:6px; padding:10px; font-size:1em; box-sizing:border-box;
+    }
+    .row { display:flex; gap:12px; }
+    .col { flex:1; }
+    .radio-group label, .check-group label { font-weight:normal; display:block; margin-top:6px; color:#444; }
+    .hint { font-size:.9em; color:#666; margin-top:6px; }
+    button {
+      width:100%; margin-top:20px; padding:12px; font-size:1.1em;
+      background:#0066cc; color:#fff; border:none; border-radius:6px; cursor:pointer;
+    }
+    button:hover { background:#004d99; }
+    .small { font-size:.9em; color:#666; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Pedido de Impressão</h2>
+
+    <form method="post" enctype="multipart/form-data">
+
+      <div class="row">
+        <div class="col">
+          <label for="tipo_cor">Tipo de impressão</label>
+          <select id="tipo_cor" name="tipo_cor" required>
+            <option value="preto e branco">Preto e Branco</option>
+            <option value="colorido">Colorido</option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label for="tamanho_papel">Tamanho do papel</label>
+          <select id="tamanho_papel" name="tamanho_papel" required>
+            <option value="A4" selected>A4</option>
+            <option value="A3">A3</option>
+            <option value="A2">A2</option>
+            <option value="A1">A1</option>
+            <option value="A0">A0</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="tipo_papel">Tipo do papel</label>
+      <select id="tipo_papel" name="tipo_papel" required>
+        <option value="Normal (Sulfite 75g)" selected>Normal (Sulfite 75g)</option>
+        <option value="Couchê (foto 120g)">Couchê (foto 120g)</option>
+        <option value="Couchê (foto 180g)">Couchê (foto 180g)</option>
+      </select>
+
+      <div class="row">
+        <div class="col">
+          <label for="copias">Cópias</label>
+          <input id="copias" type="number" name="copias" min="1" value="1" required />
+        </div>
+
+        <div class="col">
+          <label for="slides_por_pagina">Slides por página (só A4)</label>
+          <select id="slides_por_pagina" name="slides_por_pagina" required>
+            <option value="1" selected>1 por página</option>
+            <option value="2">2 por página</option>
+            <option value="4">4 por página</option>
+            <option value="6">6 por página</option>
+          </select>
+          <div class="hint">Para tamanhos diferentes de A4, o sistema considera 1 por página.</div>
+        </div>
+      </div>
+
+      <label>Preferência de impressão</label>
+      <div class="radio-group">
+        <label><input type="radio" name="frente_verso" value="false" checked /> Somente frente</label>
+        <label><input type="radio" name="frente_verso" value="true" /> Frente e verso</label>
+      </div>
+
+      <label for="arquivo">Arquivo</label>
+      <input id="arquivo" type="file" name="arquivo" accept=".pdf,.docx" required />
+      <div class="hint">Formatos aceitos: .pdf e .docx</div>
+
+      <label>Serviços (opcional)</label>
+      <div class="check-group">
+        <label><input type="checkbox" name="grampear" value="true" /> Grampear</label>
+        <label><input type="checkbox" name="encadernar" value="true" /> Encadernar</label>
+        <label><input type="checkbox" name="plastificar" value="true" /> Plastificar</label>
+      </div>
+
+      <label for="descricao">Descrição (opcional)</label>
+      <textarea id="descricao" name="descricao" rows="4" placeholder="Escreva observações: capa, grampos, entregar para alguém, etc."></textarea>
+
+      <button formaction="/mostrar-orcamento" type="submit">Calcular orçamento</button>
+      
+
+      <div class="small">
+        * O preço é por página cobrada (após aplicar slides por página no A4). Frente e verso não altera o valor.
+      </div>
+    </form>
+  </div>
+</body>
+</html>
